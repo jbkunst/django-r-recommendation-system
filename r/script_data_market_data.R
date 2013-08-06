@@ -1,9 +1,16 @@
 rm(list=ls())
-# install.packages("arules")
 
-library(arules)
-library(plyr)
-library(stringr)
+if(!require(RSQLite)){ install.packages("RSQLite"); library(RSQLite) }
+if(!require(DBI)){ install.packages("DBI"); library(DBI) }
+if(!require(arules)){ install.packages("arules"); library(arules) }
+
+
+
+db <- dbConnect(SQLite(), dbname="../recsys/data.db")
+dbListTables(db)
+dbReadTable(db, "recsys_cart_product")
+
+
 
 data(Groceries)
 Groceries
