@@ -8,7 +8,11 @@ class Product(models.Model):
 
 class Cart(models.Model):
 	datetime = models.DateTimeField(auto_now=True)
-	product = models.ManyToManyField(Product)
+	products = models.ManyToManyField(Product)
 
 	def __unicode__(self):
 		return u'%s - %s' % (self.pk, self.datetime)
+
+class Recommendation(models.Model):
+  buy = models.ManyToManyField(Product, related_name="buy+")
+  rec = models.ManyToManyField(Product, related_name="rec+")

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <div class="row">
+  <div class="col-lg-6">
+    <h3>My cart</h3>
+    <form style="" method="post" class="form-horizontal text-left" id="buyform">
+      {% csrf_token %}
+      <div class="control-group">
+        <label class="control-label" >{{ form.products.label_tag }}</label>
+        <div class="controls">
+          {{form.products}}
+        <span class="help-inline">
+          {{ form.products.errors }}
+        </span>
+      </div>
+      </div>
+      <br>
+      <div class="control-group">
+        <div class="controls">
+          <input type="submit" class='btn btn-success' value="Buy" />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <h3>Recommendations ;)</h3>
+    <div id="recommendations"></div>
+ </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ STATIC_URL}}js/chosen.jquery.js"></script>
+    <link href="{{ STATIC_URL }}css/chosen.css" rel="stylesheet">
+    <script>
+      $(function(){
+        $('#id_products')
+        .chosen({width: '100%', max_selected_options: 5, no_results_text: "Oops, nothing found!"})
+        .change(function(){
+          $.ajax({
+            url: "{% url 'recommned' %}",
+            type: "GET",
+            data: $("#buyform").serialize(),
+            success: function(data){
+              $("#recommendations").empty();
+              for(var e in data){
+                console.log(data[e])
+                $("#recommendations").append('<p><button type="button" class="btn btn-primary btn-xs">' + data[e] + '</button></p>');
+              }
+            }
+          });
+        });
+      });
+    </script>
+{% endblock %}

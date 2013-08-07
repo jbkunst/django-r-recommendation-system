@@ -9,3 +9,8 @@ admin.site.register(Product, ProductAdmin)
 class CartAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Cart, CartAdmin)
+
+
+class RecommendationAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(Recommendation, RecommendationAdmin)

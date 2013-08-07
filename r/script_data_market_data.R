@@ -8,7 +8,10 @@ if(!require(arules)){ install.packages("arules"); library(arules) }
 
 db <- dbConnect(SQLite(), dbname="../recsys/data.db")
 dbListTables(db)
-dbReadTable(db, "recsys_cart_product")
+
+dbReadTable(db, "recsys_cart")
+tnx <- dbReadTable(db, "recsys_cart_product")
+dbReadTable(db, "recsys_product")
 
 
 
@@ -39,6 +42,7 @@ head(txn, 60)
 write.table(txn, file="tscs.txt", sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
 
 
+as
 txn <- read.transactions(file="tscs.txt", rm.duplicates= FALSE, format="single",sep="\t", cols =c(1,2))
 txn
 str(txn)
