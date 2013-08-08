@@ -18,9 +18,18 @@ def buy(request):
 def recommned(request):
 	from django.utils import simplejson
 	prods =  request.GET.getlist('products')
-
 	data = [ i[0] for i in Product.objects.filter(pk__in=prods).order_by('?').values_list('name')]
+	rec = [ str(i) for i in Recommendation.objects.filter(buy__pk__in=prods).values_list('rec__name', flat = True)]
 
+	def remove_values_from_list(the_list, val):
+		return [value for value in the_list if value != val]
 
-	# order_by('?')
+	for p in prods:
+		rec  = remove_values_from_list(rec, Product.objects.get(pk=p).name)
+
+	from collections import Counter
+	c = Counter(rec).most_common()
+	data = [ i[0] for i in c]
+	
+	
 	return HttpResponse(simplejson.dumps(data), mimetype='application/json')

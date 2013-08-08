@@ -30,6 +30,15 @@
 </div>
 {% endblock %}
 
+{% block css %}
+  <style>
+    #recommendations *{
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+  </style>
+{% endblock %}
+
 {% block js %}
     <script src="{{ STATIC_URL}}js/chosen.jquery.js"></script>
     <link href="{{ STATIC_URL }}css/chosen.css" rel="stylesheet">
@@ -43,14 +52,21 @@
             type: "GET",
             data: $("#buyform").serialize(),
             success: function(data){
+              $('.clase').unbind('click');
               $("#recommendations").empty();
               for(var e in data){
-                console.log(data[e])
-                $("#recommendations").append('<p><button type="button" class="btn btn-primary btn-xs">' + data[e] + '</button></p>');
+                $("#recommendations").append('<button type="button" class="btn btn-primary btn-xs clase">' + data[e] + '</button>');
               }
+              $('.clase').click( function(){
+                console.log("algo" + $(this).text())
+              });
+              
             }
           });
+          
         });
+
+
       });
     </script>
 {% endblock %}

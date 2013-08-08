@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Django+R</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Django+R">
+  <meta name="author" content="Joshua Kunst">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <slide class="nobackground">
+      <article class="flexbox vcenter">
+        <span>
+          <img width='400px' src="assets/img/logo.png">
+        </span>
+      </article>
+    </slide>
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>Django+R</h1>
+        <h2>Una breve introducción de que podemos hacer de entrete</h2>
+        <p>Joshua Kunst<br/>Analyst at Foris</p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Aclaración</h2>
+  </hgroup>
+  <article>
+    <p><br>
+Las opiniones vertidas en esta presentación son de exclusiva responsabilidad del autor de esta
+y representan necesariamente el pensamiento del mismo.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>¿Por qué la presentación?</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<ol class = "build">
+<li><p>Porque se un algo R</p></li>
+<li><p>Se un poco menos de Django</p></li>
+<li><p>Pero no se nada de como servirlo en un servidor</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>¿Que haremos?</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<ol class = "build">
+<li><p>Sistema de recomendación</p></li>
+<li><p>Existen productos y compras (de productos!)</p></li>
+<li><p>Al ir realizando una nueva compra nos recomendará que productos podemos comprar de acuerdo al historial de compras ya realizadas</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>La Receta</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<ol class = "build">
+<li><p>Empezar a pre-horenear la aplicación en django. Crear el modelo de base de datos, vistas, forularios</p></li>
+<li><p>Ir cocinando la funciones de R para poder, a patir de cierta cantidad de compras, generar nuevas reglas y actualizar la tabla de recomendaciones</p></li>
+<li><p>Mezclar lo anterior y hornearlo a un servidor</p></li>
+<li><p>Servirlo</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>El Modelo</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<pre><code>class Product(models.Model):
+  name = models.CharField(max_length=30)
+
+class Cart(models.Model):
+    datetime = models.DateTimeField(auto_now=True)
+    products = models.ManyToManyField(Product)
+
+class Recommendation(models.Model):
+  buy = models.ManyToManyField(Product, related_name=&quot;buy+&quot;)
+  rec = models.ManyToManyField(Product, related_name=&quot;rec+&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Las Vistas</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<pre><code>def buy(request):
+  if request.method == &#39;POST&#39;:
+        form = BuyForm(request.POST) 
+        if form.is_valid():
+            cart = form.save()
+            return redirect(buy)
+    else:
+        form = BuyForm()
+    return render_to_response(&#39;buy.html&#39;, locals(), context_instance=RequestContext(request))
+
+def recommned(request):
+    from django.utils import simplejson
+    prods =  request.GET.getlist(&#39;products&#39;)
+
+    data = [ i[0] for i in Product.objects.filter(pk__in=prods).order_by(&#39;?&#39;).values_list(&#39;name&#39;)]
+
+
+    # order_by(&#39;?&#39;)
+    return HttpResponse(simplejson.dumps(data), mimetype=&#39;application/json&#39;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>¿Cómo generar las reglas?</h2>
+  </hgroup>
+  <article>
+    <p><br></p>
+
+<ol class = "build">
+<li><p>Con R :P y el paquete <code>arules</code></p></li>
+<li><p>Extraer las transacciones de la base de datos (el modelo <code>Cart</code>) </p></li>
+<li><p>Generar y parsear las reglas</p></li>
+<li><p>Actualizar la tabla <code>Recommendation</code></p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>
