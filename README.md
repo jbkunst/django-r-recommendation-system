@@ -5,14 +5,14 @@
 
 ### This mini app is the combination of:
 
-- A Django app for make purchases (via form) and recommend product (via jquery GET).
+- A Django app for make purchases (via form) and recommend product (via jquery GET)
 - A sqlite3 database to keep the information of products, carts and recommendations
-- A R script for generate new recommendations with the `arules` package.
+- A R script for generate new recommendations with the `arules` package
 
 ### How it works:
 
-- Every time you add a product (or delete it) the software recommend according the existing rules.
-- Every `n` purchases the software generate new rules with the last `m` purchases and update in the database.
+- Every time you add a product (or delete it) of your cart the software recommend according the existing rules
+- Every `n` purchases the software generate new rules with the last `m` purchases and update in the database
 
 ### The models.py
 ```
@@ -30,7 +30,6 @@ class Recommendation(models.Model):
 
 
 ### The Views.py
-
 ```
 def buy(request):
   if request.method == 'POST':
@@ -56,7 +55,7 @@ def recommned(request):
 
 ### The function to call the magic
 
-It has a windows path (sorry! :P).
+Call R function via a command line with Rscript command.
 
 ```
 def generate_new_rules():
@@ -142,8 +141,6 @@ generate_recommentation <- function(n_buys= 3000){
   txn2 <- as(txn2, "transactions")
   
   rules <- apriori(txn2,  parameter = list(supp = 0.03, conf = 0.03))
-  rules <- apriori(txn2,  parameter = list(supp = 0.01, conf = 0.01))
-
   
   write(rules, file = "rules.txt", quote=FALSE, sep = "\t", col.names = TRUE, row.names = FALSE)
   rules <- read.table("rules.txt", sep = "\t", header=TRUE, stringsAsFactors=FALSE)
@@ -169,5 +166,9 @@ generate_recommentation <- function(n_buys= 3000){
 generate_recommentation()
 ```
 
+### Other requirements:
+
+- R and R packages!: RSQLite, DBI, plyr, arules
+- Python 2.7 and Django 1.5
 
 
