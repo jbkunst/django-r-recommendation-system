@@ -1,9 +1,20 @@
 ## A simple recommendation system with Django and R
 
+![Alt text](/static/images/demo.jpg)
+
+
+### This mini app is the combination of:
+
+- A Django app for make purchases (via form) and recommend product (via jquery GET).
+- A sqlite3 database to keep the information of products, carts and recommendations
+- A R script for generate new recommendations with the `arules` package.
+
+### How it works:
+
+- Every time you add a product (or delete it) the software recommend according the existing rules.
+- Every `n` purchases the software generate new rules with the last `m` purchases and update in the database.
 
 ### The models.py
-
-
 ```
 class Product(models.Model):
   name = models.CharField(max_length=30)
@@ -107,8 +118,6 @@ add_recommentation <- function(id1 = c(1,2), id2 = c(3,4)){
   
 }
 
-
-
 generate_recommentation <- function(n_buys= 3000){
   
   db <- dbConnect(SQLite(), dbname="data.db")
@@ -156,7 +165,6 @@ generate_recommentation <- function(n_buys= 3000){
     }
   }
 }
-
 
 generate_recommentation()
 ```
