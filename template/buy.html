@@ -45,7 +45,7 @@
     <script>
       $(function(){
         $('#id_products')
-        .chosen({width: '100%', max_selected_options: 5, no_results_text: "Oops, nothing found!"})
+        .chosen({width: '100%', no_results_text: "Oops, nothing found!"})
         .change(function(){
           $.ajax({
             url: "{% url 'recommned' %}",
@@ -55,18 +55,14 @@
               $('.clase').unbind('click');
               $("#recommendations").empty();
               for(var e in data){
-                $("#recommendations").append('<button type="button" class="btn btn-primary btn-xs clase">' + data[e] + '</button>');
+                $("#recommendations").append('<button type="button" class="btn btn-success btn-xs clase">' + data[e] + '</button>');
               }
               $('.clase').click( function(){
                 console.log("algo" + $(this).text())
               });
-              
             }
           });
-          
         });
-
-
       });
     </script>
 {% endblock %}

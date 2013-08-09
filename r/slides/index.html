@@ -37,9 +37,12 @@
     <!-- TITLE SLIDE -->
     <!-- Should I move this to a Local Layout File? -->
     <slide class="title-slide segue nobackground">
+      <aside class="gdbar">
+        <img src="assets/img/logo_small.png">
+      </aside>
       <hgroup class="auto-fadein">
         <h1>Django+R</h1>
-        <h2>Una breve introducción de que podemos hacer de entrete</h2>
+        <h2>y una oportunidad para salir del closet (uyyy!)</h2>
         <p>Joshua Kunst<br/>Analyst at Foris</p>
       </hgroup>
           </slide>
@@ -63,19 +66,37 @@ y representan necesariamente el pensamiento del mismo.</p>
     <h2>¿Por qué la presentación?</h2>
   </hgroup>
   <article>
-    <p><br></p>
-
-<ol class = "build">
-<li><p>Porque se un algo R</p></li>
-<li><p>Se un poco menos de Django</p></li>
-<li><p>Pero no se nada de como servirlo en un servidor</p></li>
-</ol>
+    <p>Porque se un algo R</p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
       <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>¿Por qué la presentación?</h2>
+  </hgroup>
+  <article>
+    <p>Se un poco menos de Django</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>¿Por qué la presentación?</h2>
+  </hgroup>
+  <article>
+    <p><center>
+<img src="assets/img/batman.jpg" alt="">
+</center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
   <hgroup>
     <h2>¿Que haremos?</h2>
   </hgroup>
@@ -92,7 +113,7 @@ y representan necesariamente el pensamiento del mismo.</p>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-4" style="background:;">
+      <slide class="" id="slide-6" style="background:;">
   <hgroup>
     
   </hgroup>
@@ -102,7 +123,7 @@ y representan necesariamente el pensamiento del mismo.</p>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-5" style="background:;">
+      <slide class="" id="slide-7" style="background:;">
   <hgroup>
     <h2>La Receta</h2>
   </hgroup>
@@ -120,7 +141,7 @@ y representan necesariamente el pensamiento del mismo.</p>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-6" style="background:;">
+      <slide class="" id="slide-8" style="background:;">
   <hgroup>
     <h2>El Modelo</h2>
   </hgroup>
@@ -143,31 +164,30 @@ class Recommendation(models.Model):
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-7" style="background:;">
+      <slide class="" id="slide-9" style="background:;">
   <hgroup>
     <h2>Las Vistas</h2>
   </hgroup>
   <article>
-    <p><br></p>
-
-<pre><code>def buy(request):
+    <pre><code>def buy(request):
   if request.method == &#39;POST&#39;:
         form = BuyForm(request.POST) 
         if form.is_valid():
             cart = form.save()
+            if Cart.objects.all().count() % 10 == 0:
+                generate_new_rules()
             return redirect(buy)
     else:
         form = BuyForm()
     return render_to_response(&#39;buy.html&#39;, locals(), context_instance=RequestContext(request))
 
 def recommned(request):
-    from django.utils import simplejson
     prods =  request.GET.getlist(&#39;products&#39;)
-
-    data = [ i[0] for i in Product.objects.filter(pk__in=prods).order_by(&#39;?&#39;).values_list(&#39;name&#39;)]
-
-
-    # order_by(&#39;?&#39;)
+    rec = [ str(i) for i in Recommendation.objects.filter(buy__pk__in=prods).values_list(&#39;rec__name&#39;, flat = True)]
+    for p in prods:
+        rec  = remove_values_from_list(rec, Product.objects.get(pk=p).name)
+    c = Counter(rec).most_common()
+    data = [ i[0] for i in c]
     return HttpResponse(simplejson.dumps(data), mimetype=&#39;application/json&#39;)
 </code></pre>
 
@@ -175,7 +195,7 @@ def recommned(request):
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-8" style="background:;">
+      <slide class="" id="slide-10" style="background:;">
   <hgroup>
     <h2>¿Cómo generar las reglas?</h2>
   </hgroup>
