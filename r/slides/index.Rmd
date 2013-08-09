@@ -16,21 +16,25 @@ mode        : selfcontained # {standalone, draft}
 ---
 ## Aclaración
 <br>
+<br>
+<br>
+<br>
+<small>
 Las opiniones vertidas en esta presentación son de exclusiva responsabilidad del autor de esta
 y representan necesariamente el pensamiento del mismo.
+</small>
 
 
 
 ---
-## ¿Por qué la presentación?
-Porque se un algo R
+## ¿Por qué la presentación? I 
+
 
 ---
-## ¿Por qué la presentación?
-Se un poco menos de Django
+## ¿Por qué la presentación? II
 
 ---
-## ¿Por qué la presentación?
+## ¿Por qué la presentación? III
 <center>
 ![](assets/img/batman.jpg)
 </center>
@@ -38,29 +42,13 @@ Se un poco menos de Django
 
 ---  
 ## ¿Que haremos?
-<br>
- 
-> 1. Sistema de recomendación
-
-> 2. Existen productos y compras (de productos!)
-
-> 3. Al ir realizando una nueva compra nos recomendará que productos podemos comprar de acuerdo al historial de compras ya realizadas
 
 
----  
+
 
 
 ---  
 ## La Receta
-<br>
- 
-> 1. Empezar a pre-horenear la aplicación en django. Crear el modelo de base de datos, vistas, forularios
-
-> 2. Ir cocinando la funciones de R para poder, a patir de cierta cantidad de compras, generar nuevas reglas y actualizar la tabla de recomendaciones
-
-> 3. Mezclar lo anterior y hornearlo a un servidor
-
-> 4. Servirlo
 
 
 ---  
@@ -83,7 +71,7 @@ class Recommendation(models.Model):
 
 
 ---  
-## Las Vistas
+## Las Vistas I
 
 ```
 def buy(request):
@@ -97,7 +85,11 @@ def buy(request):
 	else:
 		form = BuyForm()
 	return render_to_response('buy.html', locals(), context_instance=RequestContext(request))
+```
 
+---  
+## Las Vistas II
+```
 def recommned(request):
 	prods =  request.GET.getlist('products')
 	rec = [ str(i) for i in Recommendation.objects.filter(buy__pk__in=prods).values_list('rec__name', flat = True)]
@@ -114,15 +106,30 @@ def recommned(request):
 
 ---  
 ## ¿Cómo generar las reglas?
+
+
+
+
+---  
+## ¿Queremos verlo?
+
+<br><br><br><br><br><br>
+(Ustedes dicen seeeee!!)
+
+<br><br>
+...(Luego dicen Ohhhhh)
+
+
+
+---  
+## Agradecimientos
 <br>
+> 1. Foris
 
- 
-> 1. Con R :P y el paquete `arules`
+> 2. (por ende) Ustedes
 
-> 2. Extraer las transacciones de la base de datos (el modelo `Cart`) 
+> 3. Django
 
-> 3. Generar y parsear las reglas
+> 4. R
 
-> 4. Actualizar la tabla `Recommendation`
-
-
+> 5. R

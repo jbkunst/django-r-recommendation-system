@@ -82,7 +82,8 @@ generate_recommentation <- function(n_buys= 3000){
   write(rules, file = "rules.txt", quote=FALSE, sep = "\t", col.names = TRUE, row.names = FALSE)
   rules <- read.table("rules.txt", sep = "\t", header=TRUE, stringsAsFactors=FALSE)
   rules
-  
+  message(rules)
+  print(rules)
   dbGetQuery(db, "delete from recsys_recommendation")
   dbGetQuery(db, "delete from recsys_recommendation_buy")
   dbGetQuery(db, "delete from recsys_recommendation_rec")
